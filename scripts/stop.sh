@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_ROOT="/home/ubuntu/app"
-JAR_FILE="$PROJECT_ROOT/NKY-Board"
+JAR_FILE="NKY-Board"
 
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
