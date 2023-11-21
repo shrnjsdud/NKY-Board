@@ -44,7 +44,7 @@
             </tr>
 
             <tr th:each="board : ${list}">
-                <td th:text="${board.bno}">1</td>
+                <td th:text="${boardStat.size - boardStat.index}">1</td>
                 <td><a style="text-decoration-line:none;color: deepskyblue" th:href="@{${'/board/read'+page.criteria.getQueryString()+'&bno='+board.bno}}">[[${board.title}]]</a></td>
                 <td th:text="${board.member.id}"></td>
                 <td th:text="${#dates.format(board.inDate,'yyyy-MM-dd')}">yyyy-mm-dd</td>
