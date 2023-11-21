@@ -1,0 +1,23 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="modal" class="modal" id="auth_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <p id="auth_modal-text">회원 전용 기능입니다.</p>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" th:onclick="|location.href='@{/member/login}'|">로그인</button>
+        <button type="button" class="btn btn-success btn-sm" data-bs-dismiss="modal" th:onclick="|location.href='@{/member/register}'|">회원가입</button>
+        <button type="button" class="btn btn-warning btn-sm" data-bs-dismiss="modal" >Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</html>

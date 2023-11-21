@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>NKY Board</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+<div id="commentList" style="width:800px;margin-bottom: 30px">
+
+    <div style="border: 1px solid;margin-top: 5px" th:each="comment : ${comments}" th:data-cno="${comment.cno}" th:data-pcno="${comment.pcno}" th:data-bno="${comment.bno}" th:data-pcommenter="${comment.writer}">
+
+        <div class="d-inline-flex" style="margin-left: 10px;">
+            <h1 style="display: inline-block;"><i class="bi bi-person"></i></h1>
+            <div style="display: inline-block;width:100px">
+                <span th:text="${comment.writer}">writer</span>
+                <p style="font-size:0.8em" th:text="${#dates.format(comment.inDate,'yyyy-MM-dd')}">inDate</p>
+            </div>
+            <div class="d-flex justify-content-end" style="display: inline-block;width: 600px;height:30px">
+                <button  th:if="${session.id == comment.writer}" style="font-size: 0.8em;text-decoration:underline;border:none;background-color:white" onclick="deleteFn(this)">삭제</button>
+                <button th:if="${session.id != comment.writer}" style="font-size: 0.8em;text-decoration:underline;border:none;background-color:white" onclick="replyForm(this)">답글</button>
+
+            </div>
+        </div>
+        <th:block th:if="${comment.pcommenter != null}">
+                <span style="margin-left:20px;font-size: 1.0em;color: darkolivegreen;">@[[${comment.pcommenter}]]</span>
+        </th:block>
+                <p style="margin-left:20px"><i th:if="${comment.pcommenter != null}" class="bi bi-arrow-return-right"></i> [[${comment.content}]]</p>
+
+
+        <div id="re-replyForm" class="form-control" style="display: none">
+            <div class="d-inline-flex" style="margin-left: 100px;">
+                <form id="form" name="form" method="post" th:data-bno="${comment.bno}">
+                    <textarea id="content" name="content" rows="3" style="width: 600px;"></textarea>
+                </form>
+                <button class="btn btn-primary btn-sm" style="height:30px;margin-top:25px;margin-left:5px" onclick="replyFn(this)" >등록</button>
+
+            </div>
+        </div>
+        <script>
+            function replyForm(btn) {
+                let divP = $(btn).parent().parent().parent()
+                let replyF = divP.children("#re-replyForm")
+
+                if("[[${session.id}]]" == ""){
+                    $("#auth_modal").modal("show");
+                    return
+                }
+
+                if (replyF.css("display") == "none") {
+                    replyF.css("display", "block")
+                } else {
+                    replyF.css("display", "none")
+                }
+            }
+            function replyFn(btn){
+                let divP = $(btn).parent().parent().parent()
+                let form = $(btn).parent().children("#form")
+                let cno = divP.data("cno")
+                let pcno = divP.data("pcno") ? divP.data("pcno") : cno
+                let pcommenter = divP.data("pcommenter")
+                let content = form.children("#content").val();
+                let content_trim = content.replaceAll(' ','')
+                let bno = divP.data("bno");
+
+                if(content_trim==""){
+                    $("#msg_modal-text").html("한글자 이상 입력해주세요.");
+                    $('#msg_modal').modal({backdrop: false});
+                    $("#msg_modal").modal("show");
+                    return false;
+                }
+
+                $.ajax({
+                    url:"[[@{/comment/write}]]"+"/"+bno,
+                    headers : { "content-type": "application/json"},
+                    type: "post",
+                    data: JSON.stringify({bno:bno, pcno:pcno, pcommenter:pcommenter, content:content.trim()}),
+                    success:function (){commentList()},
+                    error:function (){alert("error")},
+                    complete:function (){form.children("#content").val("")}
+                })
+            }
+
+            function deleteFn(btn){
+                let divP = $(btn).parent().parent().parent()
+                let cno = divP.data("cno")
+
+                Swal.fire({
+                    title: "댓글을 삭제 하시겠습니까?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "취소",
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "확인"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url:"[[@{/comment/remove}]]"+"/"+cno,
+                            type: "delete",
+                            success: function (){commentList()},
+                            error: function (){alert("error")}
+                        })
+                    }
+                });
+
+
+
+            }
+
+
+        </script>
+
+    </div>
+
+
+</div>
+
+
+
+</body>
+</html>

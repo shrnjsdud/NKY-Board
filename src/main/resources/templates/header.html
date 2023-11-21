@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+<div class="d-flex justify-content-between bg-secondary mb-3" th:fragment="header">
+  <div class="p-2" style="color:white;">NKY Board</div>
+
+  <div th:if="${session.id != null}" class="p-2">
+    <h5 style="display: inline-block"><span class="badge bg-info" th:text="|${session.id} 님|"> </span></h5>
+    <button class="btn btn-primary btn-sm" th:onclick="|location.href='@{/member/logout}'|"> 로그아웃 </button>
+  </div>
+
+
+  <div th:if="${session.id == null}" class="p-2">
+    <button class="btn btn-success btn-sm" th:onclick="|location.href='@{${'/member/register'+page.criteria.getQueryString()}}'|"> 회원가입 </button>
+    <button class="btn btn-primary btn-sm" th:onclick="|location.href='@{${'/member/login'+page.criteria.getQueryString()}}'|"> 로그인 </button>
+  </div>
+</div>
